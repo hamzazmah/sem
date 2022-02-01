@@ -1,3 +1,3 @@
-This is a Read me file for setMethods.
+This is a Read me file for sem.
 
-Added a workflow.
+![workflow](https://github.com/<UserName>/<RepositoryName>/actions/workflows/main.yml/badge.svg)
