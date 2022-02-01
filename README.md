@@ -4,7 +4,7 @@
 
 ![build](https://github.com/hamzazmah/sem/actions/workflows/main.yml/badge.svg)
 
-<h3>Develop Build Status</h3>
+<h3>Develop Build Status:</h3>
 
 [![build](https://github.com/hamzazmah/sem/actions/workflows/main.yml/badge.svg?branch=develop)](https://github.com/hamzazmah/sem/actions/workflows/main.yml)
 
