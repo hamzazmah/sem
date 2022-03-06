@@ -16,12 +16,20 @@ public class App
         // Get Employee
         Employee emp = a.getEmployee(255530);
         // Display results
+        System.out.println("Employee (255530) Details: \n");
         a.displayEmployee(emp);
 
-        //Get employee's salary info
+        //Get all employee's salary info
         ArrayList<Employee> employees = a.getAllSalaries();
-        //Print out the tall employee's salary info
+        //Print out all employee's salary info
+        System.out.println("All Employee's Salaries Details: \n");
         a.printSalaries(employees);
+
+        //Get all employee's salary info by role
+        ArrayList<Employee> employeesByRole = a.getAllSalariesByRole("Engineer");
+        //Print out all employee's salary info
+        System.out.println("Employee's by role (Engineer) Salaries Details: \n");
+        a.printSalaries(employeesByRole);
 
         //Disconnect from db
         a.disconnect();
@@ -58,7 +66,7 @@ public class App
                 Thread.sleep(30000);
                 // Connect to database
                 con = DriverManager.getConnection("jdbc:mysql://db:3306/employees?useSSL=false", "root", "example");
-                //con = DriverManager.getConnection("jdbc:mysql://localhost:33060/employees?useSSL=false", "root", "example"); //For local testing
+                //con = DriverManager.getConnection("jdbc:mysql://localhost:33061/employees?useSSL=false", "root", "example"); //For local testing
                 System.out.println("Successfully connected");
                 break;
             }
@@ -180,10 +188,9 @@ public class App
             // Create an SQL statement
             Statement stmt = con.createStatement();
             // Create string for SQL statement
-            String strSelect =
-                    "SELECT employees.emp_no, employees.first_name, employees.last_name, salaries.salary "
-                            + "FROM employees, salaries "
-                            + "WHERE employees.emp_no = salaries.emp_no AND salaries.to_date = '9999-01-01' "
+            String strSelect = "SELECT employees.emp_no, employees.first_name, employees.last_name, salaries.salary, titles.title "
+                            + "FROM employees, salaries, titles "
+                            + "WHERE employees.emp_no = salaries.emp_no AND employees.emp_no = titles.emp_no AND salaries.to_date = '9999-01-01' "
                             + "ORDER BY employees.emp_no ASC";
             // Execute SQL statement
             ResultSet rset = stmt.executeQuery(strSelect);
@@ -196,6 +203,7 @@ public class App
                 emp.first_name = rset.getString("employees.first_name");
                 emp.last_name = rset.getString("employees.last_name");
                 emp.salary = rset.getInt("salaries.salary");
+                emp.title = rset.getString("titles.title");
                 employees.add(emp);
             }
             return employees;
@@ -209,19 +217,65 @@ public class App
     }
 
     /**
+     * Gets all the current employees and salaries.
+     * @param role - The employee's role
+     * @return A list of all employees and salaries, or null if there is an error.
+     */
+    public ArrayList<Employee> getAllSalariesByRole(String role)
+    {
+        try
+        {
+            // Create an SQL statement
+            Statement stmt = con.createStatement();
+            // Create string for SQL statement
+            String strSelect = "SELECT employees.emp_no, employees.first_name, employees.last_name, salaries.salary, titles.title "
+                             + "FROM employees, salaries, titles "
+                             + "WHERE employees.emp_no = salaries.emp_no "
+                             + "AND employees.emp_no = titles.emp_no "
+                             + "AND titles.to_date = '9999-01-01' "
+                             + "AND titles.title = '" + role + "' "
+                             + "AND salaries.to_date = '9999-01-01' "
+                             + "ORDER BY employees.emp_no ASC";
+            // Execute SQL statement
+            ResultSet rset = stmt.executeQuery(strSelect);
+            // Extract employee information
+            ArrayList<Employee> employees = new ArrayList<Employee>();
+            while (rset.next())
+            {
+                Employee emp = new Employee();
+                emp.emp_no = rset.getInt("employees.emp_no");
+                emp.first_name = rset.getString("employees.first_name");
+                emp.last_name = rset.getString("employees.last_name");
+                emp.salary = rset.getInt("salaries.salary");
+                emp.title = rset.getString("titles.title");
+                employees.add(emp);
+            }
+            return employees;
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            System.out.println("Failed to get salary details");
+            return null;
+        }
+    }
+
+
+    /**
      * Prints a list of employees salaries information.
      * @param employees The list of employees salaries to print.
      */
     public void printSalaries(ArrayList<Employee> employees)
     {
         // Print header
-        System.out.println(String.format("%-10s %-15s %-20s %-8s", "Emp No", "First Name", "Last Name", "Salary"));
+        System.out.println(String.format("%-10s %-15s %-20s %-8s %-10s", "Emp No", "First Name", "Last Name", "Salary", "Title"));
         // Loop over all employees in the list
         for (Employee emp : employees)
         {
+            String salary = "$" + emp.salary;
             String emp_string =
-                    String.format("%-10s %-15s %-20s %-8s",
-                            emp.emp_no, emp.first_name, emp.last_name, emp.salary);
+                    String.format("%-10s %-15s %-20s %-8s %-10s",
+                            emp.emp_no, emp.first_name, emp.last_name, salary, emp.title);
             System.out.println(emp_string);
         }
     }
