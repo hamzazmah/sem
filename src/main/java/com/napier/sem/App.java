@@ -344,7 +344,7 @@ public class App
                     + "FROM departments d "
                     + "JOIN dept_manager dm on d.dept_no = dm.dept_no "
                     + "JOIN employees e on e.emp_no = dm.emp_no "
-                    + "WHERE d.dept_no = '" + dept_name + "' ";
+                    + "WHERE d.dept_name = '" + dept_name + "' ";
             // Execute SQL statement
             ResultSet rset = stmt.executeQuery(strSelect);
             // Extract Department information
@@ -353,8 +353,12 @@ public class App
                 Department department = new Department();
                 department.dept_no = rset.getString("d.dept_no");
                 department.dept_name = rset.getString("d.dept_name");
-                department.manager.first_name = rset.getString("e.first_name");
-                department.manager.last_name = rset.getString("e.last_name");
+
+                Employee depMan = new Employee ();
+                depMan.first_name = rset.getString("e.first_name");
+                depMan.last_name = rset.getString("e.last_name");
+
+                department.manager = depMan;
                 return department;
             }
             else
