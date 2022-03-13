@@ -52,6 +52,16 @@ public class App
         System.out.println("Employee's by Department (Sales) Salaries Details: \n");
         a.printSalaries(employeesByDepartment);
 
+        //Adding a new Employee
+//        Employee addEmp = new Employee();
+//        addEmp.emp_no = 500000;
+//        addEmp.first_name = "Kevin";
+//        addEmp.last_name = "Chalmers";
+//        a.addEmployee(addEmp);
+//        Employee nEmp = a.getEmployee(500000);
+//        System.out.println("Employee (500000) Details: \n");
+//        a.displayEmployee(nEmp);
+
         //Disconnect from db
         a.disconnect();
     }
@@ -175,6 +185,48 @@ public class App
 
                 emp.dept = dept;
                 emp.manager = manager;
+
+                return emp;
+            }
+            else
+                return null;
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            System.out.println("Failed to get employee details");
+            return null;
+        }
+    }
+
+    /**
+     * Get Simple Employee from db
+     * @param ID
+     * @return Employee
+     */
+    public Employee getEmployeeSimple(int ID)
+    {
+        try
+        {
+            // Create an SQL statement
+            Statement stmt = con.createStatement();
+            // Create string for SQL statement
+            String strSelect =
+                    "SELECT e.emp_no AS emp_no, " +
+                            "e.first_name As first_name, " +
+                            "e.last_name AS last_name " +
+                            "FROM employees e " +
+                            "WHERE e.emp_no = " + ID;
+            // Execute SQL statement
+            ResultSet rset = stmt.executeQuery(strSelect);
+            // Return new employee if valid.
+            // Check one is returned
+            if (rset.next())
+            {
+                Employee emp = new Employee();
+                emp.emp_no = rset.getInt("emp_no");
+                emp.first_name = rset.getString("first_name");
+                emp.last_name = rset.getString("last_name");
 
                 return emp;
             }
@@ -410,6 +462,27 @@ public class App
             System.out.println(e.getMessage());
             System.out.println("Failed to get employee details");
             return null;
+        }
+    }
+
+    /**
+     * Method to add a new Employee to db
+     * @param emp Employee to add
+     */
+    public void addEmployee(Employee emp)
+    {
+        try
+        {
+            Statement stmt = con.createStatement();
+            String strUpdate = " INSERT INTO employees (emp_no, first_name, last_name, birth_date, gender, hire_date) " +
+                                "VALUES (" + emp.emp_no + ", '" + emp.first_name + "', '" + emp.last_name + "', " +
+                                "'9999-01-01', 'M', '9999-01-01')";
+            stmt.execute(strUpdate);
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            System.out.println("Failed to add employee");
         }
     }
 }

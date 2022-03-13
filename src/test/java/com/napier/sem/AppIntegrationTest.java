@@ -76,4 +76,21 @@ public class AppIntegrationTest
         Employee emp = emps.get ( 0 );
         assertEquals ( emp.dept.dept_name, "Sales" );
     }
+
+    /**
+     * Test for Adding a new Employee
+     */
+    @Test
+    void testAddEmployee()
+    {
+        Employee emp = new Employee();
+        emp.emp_no = 6912345;
+        emp.first_name = "Kevin";
+        emp.last_name = "Chalmers";
+        app.addEmployee(emp);
+        Employee e = app.getEmployeeSimple(6912345);
+        assertEquals(e.emp_no, emp.emp_no);
+        assertEquals(e.first_name, emp.first_name);
+        assertEquals(e.last_name, emp.last_name);
+    }
 }
