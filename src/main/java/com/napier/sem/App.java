@@ -192,13 +192,17 @@ public class App
         if (emp != null)
         {
             System.out.println(
-                    emp.emp_no + " "
+                    emp.emp_no + "\n"
                             + emp.first_name + " "
                             + emp.last_name + "\n"
                             + emp.title + "\n"
                             + "Salary:" + emp.salary + "\n"
-                            + emp.dept.dept_name + "\n"
-                            + "Manager: " + emp.manager.first_name + " " + emp.manager.last_name + "\n");
+                            + (emp.dept != null ? emp.dept.dept_name + "\n" : "" )
+                            + "Manager: " + (emp.manager != null ? (emp.manager.first_name + " " + emp.manager.last_name) : "") + "\n");
+        }
+        else
+        {
+            System.out.println ( "No Employee!" );
         }
     }
 
@@ -292,12 +296,25 @@ public class App
      */
     public void printSalaries(ArrayList<Employee> employees)
     {
+        //Check if Employee is not null
+        if (employees == null)
+        {
+            System.out.println ( "No Employees!" );
+            return;
+        }
+
         // Print header
         System.out.println(String.format("%-10s %-15s %-20s %-8s %-10s %-10s", "Emp No", "First Name", "Last Name", "Salary", "Title", "Department"));
         // Loop over all employees in the list
         for (Employee emp : employees)
         {
+            //Skip null employee
+            if (emp == null)
+                continue;
+
+            //Salary add Dollar sign
             String salary = "$" + emp.salary;
+
             String emp_string =
                     String.format("%-10s %-15s %-20s %-8s %-10s %-10s",
                             emp.emp_no, emp.first_name, emp.last_name, salary, emp.title, (emp.dept != null ? emp.dept.dept_name : ""));
