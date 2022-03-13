@@ -17,7 +17,14 @@ public class App
         App a = new App();
 
         //Connect to db
-        a.connect();
+        if (args.length < 1)
+        {
+            a.connect ( "localhost:33061", 3000 );
+        }
+        else
+        {
+            a.connect( args[0], Integer.parseInt ( args[1] ));
+        }
 
         // Get Employee
         Employee emp = a.getEmployee(255530);
@@ -57,7 +64,7 @@ public class App
     /**
      * Connect to the MySQL database.
      */
-    public void connect()
+    public void connect(String loc, int delay)
     {
         try
         {
@@ -77,16 +84,15 @@ public class App
             try
             {
                 // Wait a bit for db to start
-                Thread.sleep(30000);
+                Thread.sleep(delay);
                 // Connect to database
-                con = DriverManager.getConnection("jdbc:mysql://db:3306/employees?useSSL=false", "root", "example");
-                //con = DriverManager.getConnection("jdbc:mysql://localhost:33061/employees?useSSL=false", "root", "example"); //For local testing
+                con = DriverManager.getConnection("jdbc:mysql://" + loc + "/employees?allowPublicKeyRetrieval=true&useSSL=false", "root", "example");
                 System.out.println("Successfully connected");
                 break;
             }
             catch (SQLException sqle)
             {
-                System.out.println("Failed to connect to database attempt " + Integer.toString(i));
+                System.out.println("Failed to connect to database attempt " + i );
                 System.out.println(sqle.getMessage());
             }
             catch (InterruptedException ie)
