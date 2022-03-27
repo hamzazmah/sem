@@ -72,7 +72,7 @@ jobs:
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
-          automatic_release_tag: "latest"
+          automatic_release_tag: "Latest Release"
           files: |
             ./target/*.jar
       - name: Copy Output
