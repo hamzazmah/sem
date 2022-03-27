@@ -1,9 +1,5 @@
 name: Workflow for SEM
-on:
-  push:
-    branches:
-      - '*'
-      - '!master'
+on: push
 
 jobs:
   UnitTests:
