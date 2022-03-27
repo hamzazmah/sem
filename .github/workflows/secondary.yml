@@ -2,8 +2,7 @@ name: Workflow for SEM
 on:
   push:
     branches:
-      - '*'
-      - '!master'
+      - master
 
 jobs:
   UnitTests:
@@ -68,6 +67,13 @@ jobs:
         run: |
           mvn package -DskipTests
           docker-compose up --abort-on-container-exit
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          automatic_release_tag: "latest"
+          files: |
+            ./target/*.jar
       - name: Copy Output
         run: docker container cp sem_app_1:./tmp/reports ./
       - name: Deploy
