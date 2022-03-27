@@ -318,7 +318,8 @@ public class App
             String strSelect = "SELECT employees.emp_no, employees.first_name, employees.last_name, salaries.salary, titles.title "
                             + "FROM employees, salaries, titles "
                             + "WHERE employees.emp_no = salaries.emp_no AND employees.emp_no = titles.emp_no AND salaries.to_date = '9999-01-01' "
-                            + "ORDER BY employees.emp_no ASC";
+                            + "ORDER BY employees.emp_no ASC "
+                            + "LIMIT 100";
             // Execute SQL statement
             ResultSet rset = stmt.executeQuery(strSelect);
             // Extract employee information
@@ -362,7 +363,8 @@ public class App
                              + "AND titles.to_date = '9999-01-01' "
                              + "AND titles.title = '" + role + "' "
                              + "AND salaries.to_date = '9999-01-01' "
-                             + "ORDER BY employees.emp_no ASC";
+                             + "ORDER BY employees.emp_no ASC "
+                             + "LIMIT 100";
             // Execute SQL statement
             ResultSet rset = stmt.executeQuery(strSelect);
             // Extract employee information
@@ -478,7 +480,8 @@ public class App
                              + "AND dept_emp.dept_no = departments.dept_no "
                              + "AND salaries.to_date = '9999-01-01' "
                              + "AND departments.dept_name = '" + dept.dept_name + "' "
-                             + "ORDER BY employees.emp_no ASC";
+                             + "ORDER BY employees.emp_no ASC "
+                             + "LIMIT 50";
             // Execute SQL statement
             ResultSet rset = stmt.executeQuery(strSelect);
             // Extract employee information
