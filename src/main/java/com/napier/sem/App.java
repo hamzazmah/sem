@@ -157,7 +157,7 @@ public class App
             sb.append("| " + emp.emp_no + " | " +
                     emp.first_name + " | " + emp.last_name + " | " +
                     emp.title + " | " + emp.salary + " | "
-                    + emp.dept.dept_name + " | " + emp.manager + " |\r\n");
+                    + ( emp.dept != null ? emp.dept.dept_name : "-") + " | " + (emp.manager != null ? (emp.manager.first_name + " " + emp.manager.last_name) : "-") + " |\r\n");
         }
         try
         {
