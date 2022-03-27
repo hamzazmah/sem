@@ -39,19 +39,19 @@ public class App
         //Get all employee's salary info
         ArrayList<Employee> employees = a.getAllSalaries();
         //Print out all employee's salary info
-        a.outputEmployees(employees, "allEmployeesSalaryInfo");
+        a.outputEmployees(employees, "allEmployeesSalaryInfo.md");
 
         //Get all employee's salary info by role
         ArrayList<Employee> employeesByRole = a.getAllSalariesByRole("Engineer");
         //Print out all employee's salary info
-        a.outputEmployees(employeesByRole, "allEmployeesByRole");
+        a.outputEmployees(employeesByRole, "allEmployeesByRole.md");
 
         //Get all employee's salary info by their Department
         Department dep = new Department();
         dep.dept_name = "Sales";
         ArrayList<Employee> employeesByDepartment = a.getSalariesByDepartment(dep);
         //Print out all employee's salary info
-        a.outputEmployees(employeesByDepartment, "allEmployeesByDepartment");
+        a.outputEmployees(employeesByDepartment, "allEmployeesByDepartment.md");
 
 
         //Adding a new Employee
