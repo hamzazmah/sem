@@ -1,6 +1,10 @@
 package com.napier.sem;
 
 //Imports
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -35,22 +39,20 @@ public class App
         //Get all employee's salary info
         ArrayList<Employee> employees = a.getAllSalaries();
         //Print out all employee's salary info
-        System.out.println("All Employee's Salaries Details: \n");
-        a.printSalaries(employees);
+        a.outputEmployees(employees, "allEmployeesSalaryInfo");
 
         //Get all employee's salary info by role
         ArrayList<Employee> employeesByRole = a.getAllSalariesByRole("Engineer");
         //Print out all employee's salary info
-        System.out.println("Employee's by role (Engineer) Salaries Details: \n");
-        a.printSalaries(employeesByRole);
+        a.outputEmployees(employeesByRole, "allEmployeesByRole");
 
         //Get all employee's salary info by their Department
         Department dep = new Department();
         dep.dept_name = "Sales";
         ArrayList<Employee> employeesByDepartment = a.getSalariesByDepartment(dep);
         //Print out all employee's salary info
-        System.out.println("Employee's by Department (Sales) Salaries Details: \n");
-        a.printSalaries(employeesByDepartment);
+        a.outputEmployees(employeesByDepartment, "allEmployeesByDepartment");
+
 
         //Adding a new Employee
 //        Employee addEmp = new Employee();
@@ -128,6 +130,44 @@ public class App
             {
                 System.out.println("Error closing connection to database");
             }
+        }
+    }
+
+    /**
+     * Outputs to Markdown
+     * @param employees the employees to output
+     * @param filename the filename to create
+     */
+    public void outputEmployees(ArrayList<Employee> employees, String filename) {
+        // Check employees is not null
+        if (employees == null)
+        {
+            System.out.println("No employees");
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        // Print header
+        sb.append("| Emp No | First Name | Last Name | Title | Salary | Department | Manager |\r\n");
+        sb.append("| --- | --- | --- | --- | --- | --- | --- |\r\n");
+        // Loop over all employees in the list
+        for (Employee emp : employees)
+        {
+            if (emp == null) continue;
+            sb.append("| " + emp.emp_no + " | " +
+                    emp.first_name + " | " + emp.last_name + " | " +
+                    emp.title + " | " + emp.salary + " | "
+                    + emp.dept.dept_name + " | " + emp.manager + " |\r\n");
+        }
+        try
+        {
+            new File("./reports/").mkdir();
+            BufferedWriter writer = new BufferedWriter(new FileWriter("./reports/" + filename));
+            writer.write(sb.toString());
+            writer.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
