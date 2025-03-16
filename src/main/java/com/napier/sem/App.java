@@ -62,6 +62,29 @@ public class App
 //        System.out.println("Employee (500000) Details: \n");
 //        a.displayEmployee(nEmp);
 
+        // Test updating an employee
+        System.out.println("\nTesting employee update functionality:");
+        Employee empToUpdate = a.getEmployee(255530);
+        if (empToUpdate != null) {
+            System.out.println("Before update:");
+            a.displayEmployee(empToUpdate);
+            
+            // Update employee details
+            empToUpdate.first_name = "Updated";
+            empToUpdate.last_name = "Employee";
+            empToUpdate.salary = empToUpdate.salary + 5000; // Increase salary
+            
+            // Update the employee
+            boolean updateSuccess = a.updateEmployee(empToUpdate);
+            
+            if (updateSuccess) {
+                // Get the updated employee
+                Employee updatedEmp = a.getEmployee(255530);
+                System.out.println("\nAfter update:");
+                a.displayEmployee(updatedEmp);
+            }
+        }
+
         //Disconnect from db
         a.disconnect();
     }
@@ -483,6 +506,125 @@ public class App
         {
             System.out.println(e.getMessage());
             System.out.println("Failed to add employee");
+        }
+    }
+
+    /**
+     * Method to update an existing Employee's details in the database
+     * @param emp Employee with updated details
+     * @return boolean indicating if the update was successful
+     */
+    public boolean updateEmployee(Employee emp)
+    {
+        try
+        {
+            // Check if employee exists
+            Employee existingEmp = getEmployeeSimple(emp.emp_no);
+            if (existingEmp == null)
+            {
+                System.out.println("Employee does not exist");
+                return false;
+            }
+
+            // Update employee basic information
+            Statement stmt = con.createStatement();
+            String strUpdate = "UPDATE employees " +
+                               "SET first_name = '" + emp.first_name + "', " +
+                               "last_name = '" + emp.last_name + "' " +
+                               "WHERE emp_no = " + emp.emp_no;
+            stmt.executeUpdate(strUpdate);
+
+            // Update salary if provided
+            if (emp.salary > 0)
+            {
+                // Set the end date of the current salary record
+                String endCurrentSalary = "UPDATE salaries " +
+                                         "SET to_date = CURRENT_DATE() " +
+                                         "WHERE emp_no = " + emp.emp_no + " " +
+                                         "AND to_date = '9999-01-01'";
+                stmt.executeUpdate(endCurrentSalary);
+
+                // Insert new salary record
+                String insertNewSalary = "INSERT INTO salaries (emp_no, salary, from_date, to_date) " +
+                                        "VALUES (" + emp.emp_no + ", " + emp.salary + ", " +
+                                        "CURRENT_DATE(), '9999-01-01')";
+                stmt.executeUpdate(insertNewSalary);
+            }
+
+            // Update title if provided
+            if (emp.title != null && !emp.title.isEmpty())
+            {
+                // Check if the title has changed
+                String checkTitle = "SELECT title FROM titles " +
+                                   "WHERE emp_no = " + emp.emp_no + " " +
+                                   "AND to_date = '9999-01-01'";
+                ResultSet rset = stmt.executeQuery(checkTitle);
+                
+                if (rset.next() && !rset.getString("title").equals(emp.title))
+                {
+                    // Set the end date of the current title record
+                    String endCurrentTitle = "UPDATE titles " +
+                                            "SET to_date = CURRENT_DATE() " +
+                                            "WHERE emp_no = " + emp.emp_no + " " +
+                                            "AND to_date = '9999-01-01'";
+                    stmt.executeUpdate(endCurrentTitle);
+
+                    // Insert new title record
+                    String insertNewTitle = "INSERT INTO titles (emp_no, title, from_date, to_date) " +
+                                           "VALUES (" + emp.emp_no + ", '" + emp.title + "', " +
+                                           "CURRENT_DATE(), '9999-01-01')";
+                    stmt.executeUpdate(insertNewTitle);
+                }
+            }
+
+            // Update department if provided
+            if (emp.dept != null && emp.dept.dept_name != null && !emp.dept.dept_name.isEmpty())
+            {
+                // Get the department number
+                String getDeptNo = "SELECT dept_no FROM departments " +
+                                  "WHERE dept_name = '" + emp.dept.dept_name + "'";
+                ResultSet rset = stmt.executeQuery(getDeptNo);
+                
+                if (rset.next())
+                {
+                    String dept_no = rset.getString("dept_no");
+                    
+                    // Check if the employee is already in this department
+                    String checkDept = "SELECT dept_no FROM dept_emp " +
+                                      "WHERE emp_no = " + emp.emp_no + " " +
+                                      "AND to_date = '9999-01-01'";
+                    ResultSet deptRset = stmt.executeQuery(checkDept);
+                    
+                    if (deptRset.next() && !deptRset.getString("dept_no").equals(dept_no))
+                    {
+                        // Set the end date of the current department record
+                        String endCurrentDept = "UPDATE dept_emp " +
+                                               "SET to_date = CURRENT_DATE() " +
+                                               "WHERE emp_no = " + emp.emp_no + " " +
+                                               "AND to_date = '9999-01-01'";
+                        stmt.executeUpdate(endCurrentDept);
+
+                        // Insert new department record
+                        String insertNewDept = "INSERT INTO dept_emp (emp_no, dept_no, from_date, to_date) " +
+                                              "VALUES (" + emp.emp_no + ", '" + dept_no + "', " +
+                                              "CURRENT_DATE(), '9999-01-01')";
+                        stmt.executeUpdate(insertNewDept);
+                    }
+                }
+                else
+                {
+                    System.out.println("Department not found: " + emp.dept.dept_name);
+                }
+            }
+
+            System.out.println("Employee updated successfully");
+            return true;
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            System.out.println("Failed to update employee");
+            return false;
         }
     }
 }
