@@ -101,4 +101,14 @@ public class AppTest
 
         app.displayEmployee ( emp );
     }
+
+    /**
+     * Test for deleteEmployee when connection is null
+     */
+    @Test
+    void deleteEmployeeTestConnectionNull()
+    {
+        // The connection is null in the unit tests
+        assertFalse(app.deleteEmployee(1));
+    }
 }

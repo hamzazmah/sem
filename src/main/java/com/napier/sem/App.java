@@ -53,14 +53,28 @@ public class App
         a.printSalaries(employeesByDepartment);
 
         //Adding a new Employee
-//        Employee addEmp = new Employee();
-//        addEmp.emp_no = 500000;
-//        addEmp.first_name = "Kevin";
-//        addEmp.last_name = "Chalmers";
-//        a.addEmployee(addEmp);
-//        Employee nEmp = a.getEmployee(500000);
-//        System.out.println("Employee (500000) Details: \n");
-//        a.displayEmployee(nEmp);
+        Employee addEmp = new Employee();
+        addEmp.emp_no = 500000;
+        addEmp.first_name = "Kevin";
+        addEmp.last_name = "Chalmers";
+        a.addEmployee(addEmp);
+        Employee nEmp = a.getEmployee(500000);
+        System.out.println("Employee (500000) Details: \n");
+        a.displayEmployee(nEmp);
+        
+        // Delete the employee we just added
+        System.out.println("Deleting Employee (500000)...");
+        a.deleteEmployee(500000);
+        
+        // Try to get the employee again to verify deletion
+        Employee deletedEmp = a.getEmployeeSimple(500000);
+        System.out.println("Attempting to retrieve deleted Employee (500000):");
+        if (deletedEmp == null) {
+            System.out.println("Employee not found - successfully deleted.");
+        } else {
+            System.out.println("Employee still exists - deletion failed.");
+            a.displayEmployee(deletedEmp);
+        }
 
         //Disconnect from db
         a.disconnect();
@@ -483,6 +497,57 @@ public class App
         {
             System.out.println(e.getMessage());
             System.out.println("Failed to add employee");
+        }
+    }
+
+    /**
+     * Method to delete an employee's details from the database
+     * @param emp_no The employee number to delete
+     * @return true if deletion was successful, false otherwise
+     */
+    public boolean deleteEmployee(int emp_no)
+    {
+        try
+        {
+            // Check if employee exists first
+            Employee emp = getEmployeeSimple(emp_no);
+            if (emp == null)
+            {
+                System.out.println("Employee with ID " + emp_no + " does not exist.");
+                return false;
+            }
+
+            // Create an SQL statement
+            Statement stmt = con.createStatement();
+            
+            // Delete from dept_manager table first (if exists)
+            String strDeleteDeptManager = "DELETE FROM dept_manager WHERE emp_no = " + emp_no;
+            stmt.executeUpdate(strDeleteDeptManager);
+            
+            // Delete from dept_emp table
+            String strDeleteDeptEmp = "DELETE FROM dept_emp WHERE emp_no = " + emp_no;
+            stmt.executeUpdate(strDeleteDeptEmp);
+            
+            // Delete from titles table
+            String strDeleteTitles = "DELETE FROM titles WHERE emp_no = " + emp_no;
+            stmt.executeUpdate(strDeleteTitles);
+            
+            // Delete from salaries table
+            String strDeleteSalaries = "DELETE FROM salaries WHERE emp_no = " + emp_no;
+            stmt.executeUpdate(strDeleteSalaries);
+            
+            // Finally delete from employees table
+            String strDeleteEmployee = "DELETE FROM employees WHERE emp_no = " + emp_no;
+            stmt.executeUpdate(strDeleteEmployee);
+            
+            System.out.println("Employee with ID " + emp_no + " has been deleted successfully.");
+            return true;
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            System.out.println("Failed to delete employee with ID " + emp_no);
+            return false;
         }
     }
 }
