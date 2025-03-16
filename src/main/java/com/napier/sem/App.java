@@ -52,15 +52,23 @@ public class App
         System.out.println("Employee's by Department (Sales) Salaries Details: \n");
         a.printSalaries(employeesByDepartment);
 
-        //Adding a new Employee
-//        Employee addEmp = new Employee();
-//        addEmp.emp_no = 500000;
-//        addEmp.first_name = "Kevin";
-//        addEmp.last_name = "Chalmers";
-//        a.addEmployee(addEmp);
-//        Employee nEmp = a.getEmployee(500000);
-//        System.out.println("Employee (500000) Details: \n");
-//        a.displayEmployee(nEmp);
+        // Adding a new Employee with all details
+        Employee addEmp = new Employee();
+        addEmp.emp_no = 500000;
+        addEmp.first_name = "Kevin";
+        addEmp.last_name = "Chalmers";
+
+        // Add employee with salary, title, and department
+        boolean success = a.addEmployee(addEmp, 60000, "Engineer", "d001");
+
+        if (success) {
+            // Retrieve and display the newly added employee
+            Employee nEmp = a.getEmployee(500000);
+            System.out.println("New Employee (500000) Details: \n");
+            a.displayEmployee(nEmp);
+        } else {
+            System.out.println("Failed to add new employee.");
+        }
 
         //Disconnect from db
         a.disconnect();
@@ -468,21 +476,81 @@ public class App
     /**
      * Method to add a new Employee to db
      * @param emp Employee to add
+     * @param salary Salary for the employee
+     * @param title Job title for the employee
+     * @param dept_no Department number for the employee
      */
-    public void addEmployee(Employee emp)
+    public void addEmployee(Employee emp, int salary, String title, String dept_no)
+    {
+        try
+        {
+            Statement stmt = con.createStatement();
+            
+            // Insert into employees table
+            String strInsertEmployee = "INSERT INTO employees (emp_no, first_name, last_name, birth_date, gender, hire_date) " +
+                                "VALUES (" + emp.emp_no + ", '" + emp.first_name + "', '" + emp.last_name + "', " +
+                                "'1990-01-01', 'M', CURDATE())";
+            stmt.execute(strInsertEmployee);
+            
+            // Insert into salaries table
+            String strInsertSalary = "INSERT INTO salaries (emp_no, salary, from_date, to_date) " +
+                                "VALUES (" + emp.emp_no + ", " + salary + ", CURDATE(), '9999-01-01')";
+            stmt.execute(strInsertSalary);
+            
+            // Insert into titles table
+            String strInsertTitle = "INSERT INTO titles (emp_no, title, from_date, to_date) " +
+                                "VALUES (" + emp.emp_no + ", '" + title + "', CURDATE(), '9999-01-01')";
+            stmt.execute(strInsertTitle);
+            
+            // Insert into dept_emp table
+            String strInsertDeptEmp = "INSERT INTO dept_emp (emp_no, dept_no, from_date, to_date) " +
+                                "VALUES (" + emp.emp_no + ", '" + dept_no + "', CURDATE(), '9999-01-01')";
+            stmt.execute(strInsertDeptEmp);
+            
+            System.out.println("Employee added successfully!");
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            System.out.println("Failed to add employee");
+        }
+    }
+
+    /**
+     * Method to add a new Employee to db with full details (simplified version)
+     * @param emp Employee to add
+     * @param salary Salary for the employee
+     * @param title Job title for the employee
+     * @param dept_no Department number for the employee
+     * @return boolean indicating success or failure
+     */
+    public boolean addEmployee(Employee emp, int salary, String title, String dept_no)
+    {
+        return addEmployee(emp, salary, title, dept_no, null, null);
+    }
+
+    /**
+     * Method to add a new Employee to db (simplified version)
+     * @param emp Employee to add
+     * @return boolean indicating success or failure
+     */
+    public boolean addEmployee(Employee emp)
     {
         try
         {
             Statement stmt = con.createStatement();
             String strUpdate = " INSERT INTO employees (emp_no, first_name, last_name, birth_date, gender, hire_date) " +
                                 "VALUES (" + emp.emp_no + ", '" + emp.first_name + "', '" + emp.last_name + "', " +
-                                "'9999-01-01', 'M', '9999-01-01')";
+                                "'1990-01-01', 'M', CURDATE())";
             stmt.execute(strUpdate);
+            System.out.println("Employee basic details added successfully!");
+            return true;
         }
         catch (Exception e)
         {
             System.out.println(e.getMessage());
             System.out.println("Failed to add employee");
+            return false;
         }
     }
 }
