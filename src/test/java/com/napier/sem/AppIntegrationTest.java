@@ -93,4 +93,41 @@ public class AppIntegrationTest
         assertEquals(e.first_name, emp.first_name);
         assertEquals(e.last_name, emp.last_name);
     }
+
+    /**
+     * Test for deleting an employee
+     */
+    @Test
+    void testDeleteEmployee()
+    {
+        // First add an employee to delete
+        Employee emp = new Employee();
+        emp.emp_no = 9999999;
+        emp.first_name = "Test";
+        emp.last_name = "Delete";
+        app.addEmployee(emp);
+        
+        // Verify employee was added
+        Employee addedEmp = app.getEmployeeSimple(9999999);
+        assertNotNull(addedEmp);
+        
+        // Delete the employee
+        boolean result = app.deleteEmployee(9999999);
+        assertTrue(result);
+        
+        // Verify employee was deleted
+        Employee deletedEmp = app.getEmployeeSimple(9999999);
+        assertNull(deletedEmp);
+    }
+    
+    /**
+     * Test for deleting a non-existent employee
+     */
+    @Test
+    void testDeleteNonExistentEmployee()
+    {
+        // Try to delete an employee that doesn't exist
+        boolean result = app.deleteEmployee(99999999);
+        assertFalse(result);
+    }
 }
