@@ -87,10 +87,42 @@ public class AppIntegrationTest
         emp.emp_no = 6912345;
         emp.first_name = "Kevin";
         emp.last_name = "Chalmers";
-        app.addEmployee(emp);
+        boolean success = app.addEmployee(emp);
+        assertTrue(success, "Employee should be added successfully");
+        
         Employee e = app.getEmployeeSimple(6912345);
         assertEquals(e.emp_no, emp.emp_no);
         assertEquals(e.first_name, emp.first_name);
         assertEquals(e.last_name, emp.last_name);
+    }
+
+    /**
+     * Test for Adding a new Employee with full details
+     */
+    @Test
+    void testAddEmployeeWithFullDetails()
+    {
+        Employee emp = new Employee();
+        emp.emp_no = 7912345;
+        emp.first_name = "Jane";
+        emp.last_name = "Doe";
+        
+        // Add employee with salary, title, and department
+        boolean success = app.addEmployee(emp, 75000, "Senior Engineer", "d001");
+        assertTrue(success, "Employee with full details should be added successfully");
+        
+        // Verify basic employee details
+        Employee e = app.getEmployeeSimple(7912345);
+        assertEquals(e.emp_no, emp.emp_no);
+        assertEquals(e.first_name, emp.first_name);
+        assertEquals(e.last_name, emp.last_name);
+        
+        // Get full employee details to verify salary, title, and department
+        Employee fullEmp = app.getEmployee(7912345);
+        if (fullEmp != null) {
+            assertEquals(75000, fullEmp.salary);
+            assertEquals("Senior Engineer", fullEmp.title);
+            assertNotNull(fullEmp.dept);
+        }
     }
 }
